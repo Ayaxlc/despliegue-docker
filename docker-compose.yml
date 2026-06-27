@@ -1,0 +1,46 @@
+
+services:
+
+  # =========================
+  # SERVICIO PHP
+  # =========================
+  php:
+    image: php:${PHP_VERSION}-fpm
+    container_name: php_fpm
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - db
+
+  # =========================
+  # SERVICIO NGINX
+  # =========================
+  nginx:
+    image: nginx:latest
+    container_name: nginx_server
+    ports:
+      - "${NGINX_PORT}:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+
+  # =========================
+  # SERVICIO BASE DE DATOS (SQL)
+  # =========================
+  db:
+    image: mysql:8
+    container_name: mysql_db
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+
+# =========================
+# VOLÚMENES PERSISTENTES
+# =========================
+volumes:
+  db_data:
+
